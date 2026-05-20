@@ -1,0 +1,3 @@
+../Core/Src/IR.c:3:13:ADC1_Select_CH4	24	static
+../Core/Src/IR.c:15:13:ADC1_Select_CH9	24	static
+../Core/Src/IR.c:27:10:measure_dist	32	static

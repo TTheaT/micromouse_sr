@@ -1,0 +1,8 @@
+../Core/Src/utilities.c:4:6:initMaze	3
+../Core/Src/utilities.c:18:11:clockwiseStep	1
+../Core/Src/utilities.c:22:11:counterClockwiseStep	1
+../Core/Src/utilities.c:26:6:updateWalls	16
+../Core/Src/utilities.c:56:10:getNeighborCells	9
+../Core/Src/utilities.c:106:6:getBestCell	3
+../Core/Src/utilities.c:129:6:moveForward	5
+../Core/Src/utilities.c:146:6:rotate	5

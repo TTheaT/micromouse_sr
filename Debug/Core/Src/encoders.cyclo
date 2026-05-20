@@ -1,0 +1,2 @@
+../Core/Src/encoders.c:16:6:HAL_TIM_IC_CaptureCallback	3
+../Core/Src/encoders.c:31:6:update_speed	1
