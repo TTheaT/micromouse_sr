@@ -25,6 +25,8 @@
 #include "encoders.h"
 #include "motors.h"
 #include "pid.h"
+#include "IR.h"
+#include "control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +51,12 @@ extern PID pid_left;
 extern PID pid_right;
 extern float target_speed_left;
 extern float target_speed_right;
+extern uint16_t dis_FL;
+extern uint16_t dis_FR;
+float pid_corr_left;
+float pid_corr_right;
+extern int16_t base_left;
+extern int16_t base_right;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -191,24 +199,32 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
+	dis_FR = measure_dist(DIST_FR);
+	dis_FL = measure_dist(DIST_FL);
+
 	tick_index++;
-	    if (tick_index == 10){
-	        update_speed();
 
-	        float pwm_left  = pid_calculate(&pid_left,  target_speed_left, speed_left);
-	        float pwm_right = pid_calculate(&pid_right, target_speed_right, speed_right);
+//		if(tick_index==10){
+//			update_speed();
+//
+//			pid_corr_left  = pid_calculate(&pid_left,  target_speed_left, speed_left_mps);
+//			pid_corr_right = pid_calculate(&pid_right, target_speed_right, speed_right_mps);
+//
+//			base_left = feedforward_pwm(target_speed_left);
+//			base_right = feedforward_pwm(target_speed_right);
+//
+//			//make sure it is in valid PWM range
+//			if (pid_corr_left  < 0)    pid_corr_left  = 0;
+//			if (pid_corr_left  > 2047) pid_corr_left  = 2047;
+//			if (pid_corr_right < 0)    pid_corr_right = 0;
+//			if (pid_corr_right > 2047) pid_corr_right = 2047;
+//
+//			motor_speed(MOTOR_LEFT,  base_left+(uint16_t)pid_corr_left);
+//			motor_speed(MOTOR_RIGHT, base_right+(uint16_t)pid_corr_right);
+//
+//			tick_index = 0;
+//		}
 
-	        //make sure it is in valid PWM range
-	        if (pwm_left  < 0)    pwm_left  = 0;
-	        if (pwm_left  > 2047) pwm_left  = 2047;
-	        if (pwm_right < 0)    pwm_right = 0;
-	        if (pwm_right > 2047) pwm_right = 2047;
-
-	        motor_speed(MOTOR_LEFT,  (uint16_t)pwm_left);
-	        motor_speed(MOTOR_RIGHT, (uint16_t)pwm_right);
-
-	        tick_index = 0;
-	    }
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */

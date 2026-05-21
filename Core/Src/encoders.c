@@ -7,11 +7,21 @@ int32_t enc_right_count = 0;
 
 int32_t speed_left = 0;
 int32_t speed_right = 0;
+float speed_left_mps = 0;
+float speed_right_mps = 0;
 
 static uint16_t prev_left = 0;
 static uint16_t prev_right = 0;
 static int32_t old_left_count = 0;
 static int32_t old_right_count = 0;
+
+#define WHEEL_RADIUS_M 0.015f //need to measure
+#define TICKS_PER_WHEEL_REV 360.0f //12*30
+#define SAMPLE_MS 10
+#define M_PER_TICK  (2.0f * 3.14159265f * WHEEL_RADIUS_M / TICKS_PER_WHEEL_REV)
+#define MS_PER_SEC  1000
+#define SPEED_MULT  (MS_PER_SEC / SAMPLE_MS)
+
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM3) {
@@ -29,8 +39,10 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 }
 
 void update_speed(void) {
-    speed_left = (enc_left_count - old_left_count) * 10;
-    speed_right = (enc_right_count - old_right_count) * 10;
+    speed_left = (enc_left_count - old_left_count)*SPEED_MULT;
+    speed_right = (enc_right_count - old_right_count)*SPEED_MULT;
+    speed_left_mps = speed_left * M_PER_TICK;
+    speed_right_mps = speed_right * M_PER_TICK;
     old_left_count = enc_left_count;
     old_right_count = enc_right_count;
 }

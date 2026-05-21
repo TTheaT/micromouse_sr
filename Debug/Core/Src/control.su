@@ -1,6 +1,0 @@
-../Core/Src/control.c:24:6:wallFront	16	static
-../Core/Src/control.c:30:6:wallLeft	16	static
-../Core/Src/control.c:36:6:wallRight	16	static
-../Core/Src/control.c:43:6:moveForward_cell	8	static
-../Core/Src/control.c:50:6:turnRight_90	8	static
-../Core/Src/control.c:57:6:turnLeft_90	8	static

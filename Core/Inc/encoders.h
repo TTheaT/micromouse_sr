@@ -8,6 +8,8 @@ extern int32_t enc_left_count;
 extern int32_t enc_right_count;
 extern int32_t speed_left;
 extern int32_t speed_right;
+extern float speed_left_mps;
+extern float speed_right_mps;
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 

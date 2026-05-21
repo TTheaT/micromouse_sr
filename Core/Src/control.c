@@ -59,3 +59,10 @@ void turnLeft_90(void) {
 	motor_direction(MOTOR_RIGHT, 'F');
 	set_target_speed(TURN_SPEED, TURN_SPEED);
 }
+
+uint16_t feedforward_pwm(float target_mps) {
+    if (target_mps == 0.0f) return 0;   // don't apply deadband offset when commanding stop
+
+    float pwm = FF_SLOPE *(target_mps) + FF_INTERCEPT;
+    return (uint16_t)pwm;
+}

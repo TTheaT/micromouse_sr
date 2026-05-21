@@ -25,6 +25,7 @@
 #include "motors.h"
 #include "encoders.h"
 #include "PID.h"
+#include "control.h"
 
 /* USER CODE END Includes */
 
@@ -56,8 +57,10 @@ uint16_t dis_FR;
 
 PID pid_left;
 PID pid_right;
-float target_speed_left = 0;
-float target_speed_right = 0;
+float target_speed_left;
+float target_speed_right;
+float base_left;
+float base_right;
 
 /* USER CODE END PV */
 
@@ -117,11 +120,12 @@ int main(void)
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); //left encoder
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL); //left encoder
 
+
   motor_direction(MOTOR_LEFT,  'F');
   motor_direction(MOTOR_RIGHT, 'F');
 
-  pid_init(&pid_left,  8.0, 0.1, 0.0);
-  pid_init(&pid_right, 8.0, 0.1, 0.0);
+//  pid_init(&pid_left,  9.0, 1.0, 0.0);
+//  pid_init(&pid_right, 9.0, 1.0, 0.0);
 
   /* USER CODE END 2 */
 
@@ -129,20 +133,19 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /* IR testing */
-	  dis_FR = measure_dist(DIST_FR);
-	  dis_FL = measure_dist(DIST_FL);
-	  HAL_Delay(1000);
-
-	  set_target_speeds(1200, 1200);
+	  base_left = feedforward_pwm(target_speed_left);
+	  base_right = feedforward_pwm(target_speed_right);
+	  motor_speed(MOTOR_LEFT,  base_left);
+	  motor_speed(MOTOR_RIGHT,  base_left);
+	  //set_target_speeds(1, 1);
 
 	  /*manual motor testing*/
 	  //move forward
 //	  motor_direction(MOTOR_LEFT,'F');
 //	  motor_direction(MOTOR_RIGHT,'F');
 //
-//	  motor_speed(MOTOR_LEFT,1800);
-//	  motor_speed(MOTOR_RIGHT,1800);
+//	  motor_speed(MOTOR_LEFT,1600);
+//	  motor_speed(MOTOR_RIGHT,1600);
 //	  HAL_Delay(3000);
 //
 //	  motors_stop();
