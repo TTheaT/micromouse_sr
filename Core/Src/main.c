@@ -48,6 +48,7 @@
 ADC_HandleTypeDef hadc1;
 
 TIM_HandleTypeDef htim2;
+
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
@@ -59,8 +60,8 @@ PID pid_left;
 PID pid_right;
 float target_speed_left;
 float target_speed_right;
-float base_left;
-float base_right;
+int16_t base_left;
+int16_t base_right;
 
 /* USER CODE END PV */
 
@@ -124,8 +125,9 @@ int main(void)
   motor_direction(MOTOR_LEFT,  'F');
   motor_direction(MOTOR_RIGHT, 'F');
 
-//  pid_init(&pid_left,  9.0, 1.0, 0.0);
-//  pid_init(&pid_right, 9.0, 1.0, 0.0);
+  pid_init(&pid_left,  4.0, 0.0, 2.5);
+  pid_init(&pid_right, 4.0, 0.0, 2.5);
+
 
   /* USER CODE END 2 */
 
@@ -133,11 +135,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  base_left = feedforward_pwm(target_speed_left);
-	  base_right = feedforward_pwm(target_speed_right);
-	  motor_speed(MOTOR_LEFT,  base_left);
-	  motor_speed(MOTOR_RIGHT,  base_left);
-	  //set_target_speeds(1, 1);
+
+	  HAL_Delay(1000);
+	  moveForward_cell();
+//	  base_left = feedforward_pwm(target_speed_left);
+//	  base_right = feedforward_pwm(target_speed_right);
+//	  motor_speed(MOTOR_LEFT,  base_left);
+//	  motor_speed(MOTOR_RIGHT,  base_right);
+
 
 	  /*manual motor testing*/
 	  //move forward
@@ -146,8 +151,10 @@ int main(void)
 //
 //	  motor_speed(MOTOR_LEFT,1600);
 //	  motor_speed(MOTOR_RIGHT,1600);
-//	  HAL_Delay(3000);
-//
+
+
+
+////
 //	  motors_stop();
 //	  HAL_Delay(1000);
 //

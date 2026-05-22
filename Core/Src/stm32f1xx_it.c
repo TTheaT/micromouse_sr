@@ -204,26 +204,28 @@ void SysTick_Handler(void)
 
 	tick_index++;
 
-//		if(tick_index==10){
-//			update_speed();
-//
-//			pid_corr_left  = pid_calculate(&pid_left,  target_speed_left, speed_left_mps);
-//			pid_corr_right = pid_calculate(&pid_right, target_speed_right, speed_right_mps);
-//
-//			base_left = feedforward_pwm(target_speed_left);
-//			base_right = feedforward_pwm(target_speed_right);
-//
-//			//make sure it is in valid PWM range
-//			if (pid_corr_left  < 0)    pid_corr_left  = 0;
-//			if (pid_corr_left  > 2047) pid_corr_left  = 2047;
-//			if (pid_corr_right < 0)    pid_corr_right = 0;
-//			if (pid_corr_right > 2047) pid_corr_right = 2047;
-//
-//			motor_speed(MOTOR_LEFT,  base_left+(uint16_t)pid_corr_left);
-//			motor_speed(MOTOR_RIGHT, base_right+(uint16_t)pid_corr_right);
-//
-//			tick_index = 0;
-//		}
+		if(tick_index==35){
+			update_speed();
+
+			pid_corr_left  = pid_calculate(&pid_left,  target_speed_left, speed_left_mps);
+			pid_corr_right = pid_calculate(&pid_right, target_speed_right, speed_right_mps);
+
+			base_left = feedforward_pwm(target_speed_left);
+			base_right = feedforward_pwm(target_speed_right);
+			int16_t pwm_left  = base_left  + (int16_t)pid_corr_left;
+			int16_t pwm_right = base_right + (int16_t)pid_corr_right;
+
+			//make sure it is in valid PWM range
+			if (pid_corr_left  < 0)    pid_corr_left  = 0;
+			if (pid_corr_left  > 2047) pid_corr_left  = 2047;
+			if (pid_corr_right < 0)    pid_corr_right = 0;
+			if (pid_corr_right > 2047) pid_corr_right = 2047;
+
+			motor_speed(MOTOR_LEFT,  (uint16_t)pwm_left);
+			motor_speed(MOTOR_RIGHT, (uint16_t)pwm_right);
+
+			tick_index = 0;
+		}
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();

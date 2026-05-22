@@ -1,24 +1,7 @@
 #include "control.h"
-#include "main.h"
-#include "motors.h"
-#include "IR.h"
-#include "PID.h"
 
-// Constants (placeholder rn)
-#define CELL_LENGTH_MM 180 // standard micromouse cell
-#define RUN_SPEED  300 // forward velocity setpoint
-#define TURN_SPEED 200 // rotation speed
-#define WHEEL_BASE  80  // distance between wheels (NEED TO MEASURE)
-
-#define MS_PER_CELL ((CELL_LENGTH_MM * 1000)/RUN_SPEED_MMS)
-// For a 90 degree turn: arc length = (pi/2) * (wheelBase/2) per wheel
-// = ~63mm at 80mm wheelbase. At 200mm/s that's ~315ms (NEED TO MEASURE)
-#define MS_PER_90_TURN 350
-
-#define WALL_THRESHOLD_ADC 2000 // NEED TO TUNE
-//both close = front wall; one close = side wall on that side
-#define FRONT_BOTH_THRESHOLD 2500 // both must exceed for front (NEED TO TUNE)
-#define SIDE_ONLY_THRESHOLD  2000 // one sensor exceeds = side wall (NEED TO TUNE)
+int32_t current = 0;
+int32_t target = 0;
 
 // Wall sensing
 bool wallFront(void) {
@@ -41,28 +24,43 @@ bool wallRight(void) {
 
 // Motion
 void moveForward_cell(void) {
+//	static int32_t avg_enc_count = (enc_left_count+enc_right_count)/2;
+
+	current = (enc_left_count+enc_right_count)/2;
+	target = TICKS_PER_CELL;
+
 	motor_direction(MOTOR_LEFT, 'F');
 	motor_direction(MOTOR_RIGHT, 'F');
-	set_target_speed(RUN_SPEED, RUN_SPEED);
 
+	set_target_speeds(RUN_SPEED, RUN_SPEED);
+
+	//int32_t tick_count = encoder_avg_ticks();
+
+	while (((enc_left_count+enc_right_count)/2) < target) {
+		//tick_count = encoder_avg_ticks();
+		//avg_enc_count = (enc_left_count+enc_right_count)/2;
+	}
+
+	motors_stop();
+	//avg_enc_count=0;
 }
 
 void turnRight_90(void) {
 	motor_direction(MOTOR_LEFT, 'F');
 	motor_direction(MOTOR_RIGHT, 'B');
-	set_target_speed(TURN_SPEED, TURN_SPEED);
+	set_target_speeds(TURN_SPEED, TURN_SPEED);
 
 }
 
 void turnLeft_90(void) {
 	motor_direction(MOTOR_LEFT, 'B');
 	motor_direction(MOTOR_RIGHT, 'F');
-	set_target_speed(TURN_SPEED, TURN_SPEED);
+	set_target_speeds(TURN_SPEED, TURN_SPEED);
 }
 
-uint16_t feedforward_pwm(float target_mps) {
+int16_t feedforward_pwm(float target_mps) {
     if (target_mps == 0.0f) return 0;   // don't apply deadband offset when commanding stop
 
     float pwm = FF_SLOPE *(target_mps) + FF_INTERCEPT;
-    return (uint16_t)pwm;
+    return (int16_t)pwm;
 }

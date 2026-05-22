@@ -24,7 +24,9 @@ Core/Src/encoders.o: ../Core/Src/encoders.c ../Core/Inc/encoders.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
+ ../Core/Inc/control.h ../Core/Inc/motors.h ../Core/Inc/IR.h \
+ ../Core/Inc/PID.h ../Core/Inc/encoders.h
 ../Core/Inc/encoders.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
@@ -53,3 +55,8 @@ Core/Src/encoders.o: ../Core/Src/encoders.c ../Core/Inc/encoders.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
+../Core/Inc/control.h:
+../Core/Inc/motors.h:
+../Core/Inc/IR.h:
+../Core/Inc/PID.h:
+../Core/Inc/encoders.h:

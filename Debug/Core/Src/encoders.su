@@ -1,2 +1,2 @@
-../Core/Src/encoders.c:26:6:HAL_TIM_IC_CaptureCallback	24	static
-../Core/Src/encoders.c:41:6:update_speed	8	static
+../Core/Src/encoders.c:21:6:HAL_TIM_IC_CaptureCallback	24	static
+../Core/Src/encoders.c:37:6:update_speed	8	static

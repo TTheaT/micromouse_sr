@@ -1,0 +1,7 @@
+../Core/Src/control.c:7:6:wallFront	3
+../Core/Src/control.c:13:6:wallLeft	3
+../Core/Src/control.c:19:6:wallRight	3
+../Core/Src/control.c:26:6:moveForward_cell	2
+../Core/Src/control.c:48:6:turnRight_90	1
+../Core/Src/control.c:55:6:turnLeft_90	1
+../Core/Src/control.c:61:9:feedforward_pwm	2
