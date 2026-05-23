@@ -26,6 +26,11 @@
 #include "encoders.h"
 #include "PID.h"
 #include "control.h"
+#include "structures.h"
+#include "utilities.h"
+#include "floodfill.h"
+#include "queue.h"
+
 
 /* USER CODE END Includes */
 
@@ -48,13 +53,14 @@
 ADC_HandleTypeDef hadc1;
 
 TIM_HandleTypeDef htim2;
-
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
-uint16_t dis_FL;
-uint16_t dis_FR;
+float dis_FL;
+float dis_FR;
+float dis_SR;
+float dis_SL;
 
 PID pid_left;
 PID pid_right;
@@ -62,6 +68,12 @@ float target_speed_left;
 float target_speed_right;
 int16_t base_left;
 int16_t base_right;
+
+Maze maze;
+
+//set goals
+Coord Goals[] = {{7,7}, {7,8}, {8,7}, {8,8}};
+Coord startPos[] = {{0,0}};
 
 /* USER CODE END PV */
 
@@ -121,6 +133,29 @@ int main(void)
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); //left encoder
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL); //left encoder
 
+  bool atGoal(Maze* maze, Coord* goals, int numGoals) {
+      for(int i = 0; i < numGoals; i++) {
+          if(maze->mouse_pos.x == goals[i].x &&
+             maze->mouse_pos.y == goals[i].y) {
+              return true;
+          }
+      }
+      return false;
+  }
+
+  void navigateTo(Maze* maze, Coord* goals, int numGoals, bool speedRun) {
+      while(!atGoal(maze, goals, numGoals)) {
+          if (!speedRun) {
+              updateWalls(maze);
+          }
+          floodFill(maze, goals, numGoals);
+
+          Cell bestCell = getBestCell(maze);
+          rotate(maze, bestCell.dir);
+          moveForward(maze);
+
+      }
+  }
 
   motor_direction(MOTOR_LEFT,  'F');
   motor_direction(MOTOR_RIGHT, 'F');
@@ -129,15 +164,42 @@ int main(void)
   pid_init(&pid_right, 4.0, 0.0, 2.5);
 
 
-  /* USER CODE END 2 */
+  HAL_Delay(1500);
+//  moveForward_cell();
+//
+//  while(wallFront() == 0){
+//  	  moveForward_cell();
+////  	  HAL_Delay(500);
+//  }
+
+//  motors_stop();
+
+//
+//  turnLeft_90();
+
+  const int MAX_RUNS = 9;
+
+  //naviagation loop
+  for(int run = 0; run < MAX_RUNS; run++) {
+
+	  //go to goal cells
+	  navigateTo(&maze, Goals, 4,false);
+
+	  //return to start
+	  navigateTo(&maze, startPos, 1, false);
+  }
+
+  return 0;
+
+  /* USER DE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
 
-	  HAL_Delay(1000);
-	  moveForward_cell();
+
 //	  base_left = feedforward_pwm(target_speed_left);
 //	  base_right = feedforward_pwm(target_speed_right);
 //	  motor_speed(MOTOR_LEFT,  base_left);
@@ -474,8 +536,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, EMIT_FL_Pin|MR_FWD_Pin|ML_BWD_Pin|MR_BWD_Pin
-                          |EMIT_FR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, EMIT_SR_Pin|EMIT_SL_Pin|EMIT_FL_Pin|MR_FWD_Pin
+                          |ML_BWD_Pin|MR_BWD_Pin|EMIT_FR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(ML_FWD_GPIO_Port, ML_FWD_Pin, GPIO_PIN_RESET);
@@ -487,10 +549,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : EMIT_FL_Pin MR_FWD_Pin ML_BWD_Pin MR_BWD_Pin
-                           EMIT_FR_Pin */
-  GPIO_InitStruct.Pin = EMIT_FL_Pin|MR_FWD_Pin|ML_BWD_Pin|MR_BWD_Pin
-                          |EMIT_FR_Pin;
+  /*Configure GPIO pins : EMIT_SR_Pin EMIT_SL_Pin EMIT_FL_Pin MR_FWD_Pin
+                           ML_BWD_Pin MR_BWD_Pin EMIT_FR_Pin */
+  GPIO_InitStruct.Pin = EMIT_SR_Pin|EMIT_SL_Pin|EMIT_FL_Pin|MR_FWD_Pin
+                          |ML_BWD_Pin|MR_BWD_Pin|EMIT_FR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

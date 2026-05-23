@@ -1,33 +1,37 @@
 #include "control.h"
 
-int32_t current = 0;
-int32_t target = 0;
+int32_t current_dis = 0;
+int32_t target_dis = 0;
+int32_t current_angle = 0;
+int32_t target_angle = 0;
+int32_t dis_left_turn = 0;
+int32_t dis_right_turn = 0;
 
 // Wall sensing
 bool wallFront(void) {
-    uint16_t leftDis = measure_dist(DIST_FR);
-    uint16_t rightDis = measure_dist(DIST_FL);
-    return (leftDis > FRONT_BOTH_THRESHOLD) && (rightDis > FRONT_BOTH_THRESHOLD);
+    float front_leftDis = measure_dist(DIST_FR);
+    float front_rightDis = measure_dist(DIST_FL);
+    return (front_leftDis < FRONT_BOTH_THRESHOLD_M) && (front_rightDis < FRONT_BOTH_THRESHOLD_M);
 }
 
 bool wallLeft(void) {
-    uint16_t leftDis = measure_dist(DIST_FR);
-    uint16_t rightDis = measure_dist(DIST_FL);
-    return (leftDis > SIDE_ONLY_THRESHOLD) && (rightDis < SIDE_ONLY_THRESHOLD);
+    float leftDis = measure_dist(DIST_SR);
+    float rightDis = measure_dist(DIST_SL);
+    return (leftDis < SIDE_ONLY_THRESHOLD_M) && (rightDis > SIDE_ONLY_THRESHOLD_M);
 }
 
 bool wallRight(void) {
-    uint16_t leftDis = measure_dist(DIST_FR);
-    uint16_t rightDis = measure_dist(DIST_FL);
-    return (rightDis > SIDE_ONLY_THRESHOLD) && (leftDis < SIDE_ONLY_THRESHOLD);
+    float leftDis = measure_dist(DIST_SR);
+    float rightDis = measure_dist(DIST_SL);
+    return (rightDis < SIDE_ONLY_THRESHOLD_M) && (leftDis < SIDE_ONLY_THRESHOLD_M);
 }
 
 // Motion
 void moveForward_cell(void) {
 //	static int32_t avg_enc_count = (enc_left_count+enc_right_count)/2;
 
-	current = (enc_left_count+enc_right_count)/2;
-	target = TICKS_PER_CELL;
+	current_dis = (enc_left_count+enc_right_count)/2;
+	target_dis = TICKS_PER_CELL + current_dis;
 
 	motor_direction(MOTOR_LEFT, 'F');
 	motor_direction(MOTOR_RIGHT, 'F');
@@ -36,27 +40,90 @@ void moveForward_cell(void) {
 
 	//int32_t tick_count = encoder_avg_ticks();
 
-	while (((enc_left_count+enc_right_count)/2) < target) {
+	while (((enc_left_count+enc_right_count)/2) < target_dis) {
 		//tick_count = encoder_avg_ticks();
 		//avg_enc_count = (enc_left_count+enc_right_count)/2;
 	}
 
 	motors_stop();
+//	HAL_Delay(500); //TAKE THIS AWAY IF FIGURE OUT A BETTER WAY
 	//avg_enc_count=0;
 }
 
-void turnRight_90(void) {
-	motor_direction(MOTOR_LEFT, 'F');
-	motor_direction(MOTOR_RIGHT, 'B');
-	set_target_speeds(TURN_SPEED, TURN_SPEED);
+//void turnRight_90(void) {
+//
+//	dis_left_turn = (((enc_left_count*M_PER_TICK)* 2 * PI * WHEEL_RADIUS_M) / 360);
+//	dis_right_turn = (((enc_right_count*M_PER_TICK)* 2 * PI * WHEEL_RADIUS_M) / 360);
+//	current_angle = ((dis_left_turn-dis_right_turn)/(2*RW))*(180/PI);
+//	target_angle = 90;
+//
+//	motor_direction(MOTOR_LEFT, 'F');
+//	motor_direction(MOTOR_RIGHT, 'B');
+//
+//	set_target_speeds(TURN_SPEED, TURN_SPEED);
+//
+//	while (((dis_left_turn-dis_right_turn)/(2*RW))*(180/PI) < target_angle) {
+//			//tick_count = encoder_avg_ticks();
+//			//avg_enc_count = (enc_left_count+enc_right_count)/2;
+//	}
+//	motors_stop();
+//
+//}
 
+void turnRight_45(void) {
+    int32_t start_left  = enc_left_count;
+    int32_t start_right = enc_right_count;
+
+    motor_direction(MOTOR_LEFT, 'F');
+    motor_direction(MOTOR_RIGHT, 'B');
+    set_target_speeds(TURN_SPEED, TURN_SPEED);
+
+    float angle_deg = 0.0f;
+    while (angle_deg < 100.0f) {
+        float dist_left_m  = (enc_left_count  - start_left)  * M_PER_TICK;
+        float dist_right_m = (enc_right_count - start_right) * M_PER_TICK;
+        // For a right turn: left wheel goes forward (+), right goes backward (-)
+        // So dist_left_m is positive and dist_right_m is negative,
+        // and (dist_left_m - dist_right_m) is positive and growing.
+        angle_deg = ((dist_left_m - dist_right_m) / RW) * (180.0f / PI);
+    }
+
+    motors_stop();
 }
 
-void turnLeft_90(void) {
-	motor_direction(MOTOR_LEFT, 'B');
-	motor_direction(MOTOR_RIGHT, 'F');
-	set_target_speeds(TURN_SPEED, TURN_SPEED);
+void turnLeft_45(void) {
+    int32_t start_left  = enc_left_count;
+    int32_t start_right = enc_right_count;
+
+    motor_direction(MOTOR_LEFT, 'B');
+    motor_direction(MOTOR_RIGHT, 'F');
+    set_target_speeds(TURN_SPEED, TURN_SPEED);
+
+    float angle_deg = 0.0f;
+    while (angle_deg < 100.0f) {
+        float dist_left_m  = (enc_left_count  - start_left)  * M_PER_TICK;
+        float dist_right_m = (enc_right_count - start_right) * M_PER_TICK;
+        // For a left turn: left wheel goes backward (0), right goes forward (+)
+        // So dist_right_m is positive and dist_left_m is negative,
+        // and (dist_right_m - dist_left_m) is positive and growing.
+        angle_deg = ((dist_right_m - dist_left_m) / RW) * (180.0f / PI);
+    }
+
+    motors_stop();
 }
+
+void turnRight_90(void){
+	turnRight_45();
+	turnRight_45();
+	HAL_Delay(500);
+}
+
+void turnLeft_90(void){
+	turnLeft_45();
+	turnLeft_45();
+	HAL_Delay(500);
+}
+
 
 int16_t feedforward_pwm(float target_mps) {
     if (target_mps == 0.0f) return 0;   // don't apply deadband offset when commanding stop

@@ -1,7 +1,9 @@
-../Core/Src/control.c:7:6:wallFront	3
-../Core/Src/control.c:13:6:wallLeft	3
-../Core/Src/control.c:19:6:wallRight	3
-../Core/Src/control.c:26:6:moveForward_cell	2
-../Core/Src/control.c:48:6:turnRight_90	1
-../Core/Src/control.c:55:6:turnLeft_90	1
-../Core/Src/control.c:61:9:feedforward_pwm	2
+../Core/Src/control.c:11:6:wallFront	3
+../Core/Src/control.c:17:6:wallLeft	3
+../Core/Src/control.c:23:6:wallRight	3
+../Core/Src/control.c:30:6:moveForward_cell	2
+../Core/Src/control.c:73:6:turnRight_45	2
+../Core/Src/control.c:94:6:turnLeft_45	2
+../Core/Src/control.c:115:6:turnRight_90	1
+../Core/Src/control.c:121:6:turnLeft_90	1
+../Core/Src/control.c:128:9:feedforward_pwm	2

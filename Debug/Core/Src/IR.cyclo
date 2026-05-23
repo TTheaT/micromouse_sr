@@ -1,3 +1,5 @@
 ../Core/Src/IR.c:3:13:ADC1_Select_CH4	2
-../Core/Src/IR.c:15:13:ADC1_Select_CH9	2
-../Core/Src/IR.c:27:10:measure_dist	3
+../Core/Src/IR.c:16:13:ADC1_Select_CH9	2
+../Core/Src/IR.c:29:13:ADC1_Select_CH5	2
+../Core/Src/IR.c:42:13:ADC1_Select_CH8	2
+../Core/Src/IR.c:54:7:measure_dist	5

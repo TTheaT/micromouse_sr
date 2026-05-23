@@ -10,19 +10,24 @@
 #include "PID.h"
 #include "encoders.h"
 //
-#define CELL_LENGTH_M 0.167f // standard micromouse cell
+#define CELL_LENGTH_M 0.235f // standard micromouse cell
 #define WHEEL_RADIUS_M 0.015f
+#define RW 0.0395f
+#define PI 3.14159265f
 #define TICKS_PER_WHEEL_REV 360.0f //12*30
-#define M_PER_TICK  (2.0f * 3.14159265f * WHEEL_RADIUS_M / TICKS_PER_WHEEL_REV)
+#define M_PER_TICK  (2.0f * PI * WHEEL_RADIUS_M / TICKS_PER_WHEEL_REV)
 #define RUN_SPEED  0.4 // forward velocity setpoint
 #define TURN_SPEED 0.35 // rotation speed
 #define WHEEL_BASE  0.079  // distance between wheels (NEED TO MEASURE)
 #define TICKS_PER_CELL (CELL_LENGTH_M/M_PER_TICK)
 
-#define WALL_THRESHOLD_ADC 2000 //NEED TO TUNE
-//both close = front wall; one close = side wall on that side
-#define FRONT_BOTH_THRESHOLD 2500 // both must exceed for front (NEED TO TUNE)
-#define SIDE_ONLY_THRESHOLD  2000 // one sensor exceeds = side wall (NEED TO TUNE)
+// original front threshold
+//#define FRONT_BOTH_THRESHOLD_M 0.065 // both must exceed for front
+
+// manual offset
+#define FRONT_BOTH_THRESHOLD_M 0.085
+
+#define SIDE_ONLY_THRESHOLD_M  0.08 // one sensor exceeds = side wall
 
 //base speed slope and intercept
 #define FF_SLOPE 995.0f
@@ -34,8 +39,12 @@ extern TIM_HandleTypeDef htim4;
 extern int32_t enc_left_count;
 extern int32_t enc_right_count;
 
-extern int32_t current;
-extern int32_t target;
+extern int32_t current_dis;
+extern int32_t target_dis;
+extern int32_t current_angle;
+extern int32_t target_angle;
+extern int32_t dis_left_turn;
+extern int32_t dis_right_turn;
 
 // Wall sensing
 bool wallFront(void);
@@ -44,6 +53,8 @@ bool wallRight(void);
 
 // Motion
 void moveForward_cell(void);
+void turnRight_45(void);
+void turnLeft_45(void);
 void turnRight_90(void);
 void turnLeft_90(void);
 

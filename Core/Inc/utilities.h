@@ -14,8 +14,6 @@ Direction clockwiseStep(Direction currentDir);
 
 Direction counterClockwiseStep(Direction currentDir);
 
-void updateSimulator(Maze* maze);
-
 void updateWalls(Maze* maze);
 
 CellList getNeighborCells(Maze* maze, Coord c);

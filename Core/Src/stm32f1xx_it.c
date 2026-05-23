@@ -51,8 +51,10 @@ extern PID pid_left;
 extern PID pid_right;
 extern float target_speed_left;
 extern float target_speed_right;
-extern uint16_t dis_FL;
-extern uint16_t dis_FR;
+extern float dis_FL;
+extern float dis_FR;
+extern float dis_SL;
+extern float dis_SR;
 float pid_corr_left;
 float pid_corr_right;
 extern int16_t base_left;
@@ -201,6 +203,8 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 	dis_FR = measure_dist(DIST_FR);
 	dis_FL = measure_dist(DIST_FL);
+	dis_SL = measure_dist(DIST_SL);
+	dis_SR = measure_dist(DIST_SR);
 
 	tick_index++;
 
