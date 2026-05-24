@@ -6,6 +6,10 @@
 #include "structures.h"
 #include "queue.h"
 
+extern bool isWallFront;
+extern bool isWallRight;
+extern bool isWallLeft;
+
 //Maze Functions
 void initMaze(Maze *maze);
 

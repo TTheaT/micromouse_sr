@@ -115,6 +115,6 @@ float measure_dist(dist_t dist){
 	HAL_GPIO_WritePin(emitter_port, emitter_pin, GPIO_PIN_RESET);
 
 	return dis_m;
-	return (float)adc_val;
+	//return (float)adc_val;
 }
 

@@ -34,19 +34,22 @@ void updateWalls(Maze* maze){
     int dx[] = {0, 1, 0, -1};  // NORTH, EAST, SOUTH, WEST
     int dy[] = {1, 0, -1, 0};
 
-    if (wallFront()){
+    if (isWallFront){
+    	HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET);
         maze->cellWalls[y][x] |= masks[dir];
         if(y+dy[dir] >= 0 && y+dy[dir] < MAZE_SIZE && x+dx[dir] >=0 && x+dx[dir] < MAZE_SIZE)
         maze->cellWalls[y+dy[dir]][x+dx[dir]] |= masks[(dir+2)%4]; //set wall on the opposite side
     }
 
-    if (wallLeft()){
+    if (isWallLeft){
+    	HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
         maze->cellWalls[y][x] |= masks[(dir+3)%4];
         if(y+dy[dir] >= 0 && y+dy[dir] < MAZE_SIZE && x+dx[dir] >=0 && x+dx[dir] < MAZE_SIZE)
         maze->cellWalls[y+dy[(dir+3)%4]][x+dx[(dir+3)%4]] |= masks[(dir+1)%4];
     }
 
-    if (wallRight()){
+    if (isWallRight){
+    	HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
         maze->cellWalls[y][x] |= masks[(dir+1)%4];
         if(y+dy[dir] >= 0 && y+dy[dir] < MAZE_SIZE && x+dx[dir] >=0 && x+dx[dir] < MAZE_SIZE)
         maze->cellWalls[y+dy[(dir+1)%4]][x+dx[(dir+1)%4]] |= masks[(dir+3)%4];

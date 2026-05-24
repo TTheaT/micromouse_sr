@@ -25,9 +25,10 @@
 //#define FRONT_BOTH_THRESHOLD_M 0.065 // both must exceed for front
 
 // manual offset
-#define FRONT_BOTH_THRESHOLD_M 0.085
+#define FRONT_THRESHOLD_M 0.12
 
-#define SIDE_ONLY_THRESHOLD_M  0.08 // one sensor exceeds = side wall
+#define LEFT_THRESHOLD_M  0.08 // one sensor exceeds = side wall
+#define RIGHT_THRESHOLD_M 0.07
 
 //base speed slope and intercept
 #define FF_SLOPE 995.0f

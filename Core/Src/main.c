@@ -62,13 +62,17 @@ float dis_FR;
 float dis_SR;
 float dis_SL;
 
+bool isWallFront;
+bool isWallRight;
+bool isWallLeft;
+
 PID pid_left;
 PID pid_right;
 float target_speed_left;
 float target_speed_right;
 int16_t base_left;
 int16_t base_right;
-
+bool isWallFront;
 Maze maze;
 
 //set goals
@@ -90,7 +94,29 @@ static void MX_TIM4_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+    bool atGoal(Maze* maze, Coord* goals, int numGoals) {
+		for(int i = 0; i < numGoals; i++) {
+			if(maze->mouse_pos.x == goals[i].x &&
+			   maze->mouse_pos.y == goals[i].y) {
+				return true;
+			}
+		}
+		return false;
+	}
 
+	void navigateTo(Maze* maze, Coord* goals, int numGoals, bool speedRun) {
+		while(!atGoal(maze, goals, numGoals)) {
+			if (!speedRun) {
+				updateWalls(maze);
+			}
+			floodFill(maze, goals, numGoals);
+
+			Cell bestCell = getBestCell(maze);
+			rotate(maze, bestCell.dir);
+			moveForward(maze);
+
+		}
+	}
 /* USER CODE END 0 */
 
 /**
@@ -127,71 +153,51 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 
-  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); //left encoder
-  HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL); //left encoder
+	HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL); //left encoder
+	HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL); //left encoder
 
-  bool atGoal(Maze* maze, Coord* goals, int numGoals) {
-      for(int i = 0; i < numGoals; i++) {
-          if(maze->mouse_pos.x == goals[i].x &&
-             maze->mouse_pos.y == goals[i].y) {
-              return true;
-          }
-      }
-      return false;
-  }
-
-  void navigateTo(Maze* maze, Coord* goals, int numGoals, bool speedRun) {
-      while(!atGoal(maze, goals, numGoals)) {
-          if (!speedRun) {
-              updateWalls(maze);
-          }
-          floodFill(maze, goals, numGoals);
-
-          Cell bestCell = getBestCell(maze);
-          rotate(maze, bestCell.dir);
-          moveForward(maze);
-
-      }
-  }
-
-  motor_direction(MOTOR_LEFT,  'F');
-  motor_direction(MOTOR_RIGHT, 'F');
-
-  pid_init(&pid_left,  4.0, 0.0, 2.5);
-  pid_init(&pid_right, 4.0, 0.0, 2.5);
+	HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
 
 
-  HAL_Delay(1500);
-//  moveForward_cell();
+	motor_direction(MOTOR_LEFT,  'F');
+	motor_direction(MOTOR_RIGHT, 'F');
+
+	pid_init(&pid_left,  4.0, 0.0, 2.5);
+	pid_init(&pid_right, 4.0, 0.0, 2.5);
+
+
+	HAL_Delay(1500);
+	//  moveForward_cell();
+	//
+	//  while(wallFront() == 0){
+	//  	  moveForward_cell();
+	////  	  HAL_Delay(500);
+	//  }
+
+	//  motors_stop();
+
+	//
+	//  turnLeft_90();
+
+//	const int MAX_RUNS = 9;
 //
-//  while(wallFront() == 0){
-//  	  moveForward_cell();
-////  	  HAL_Delay(500);
-//  }
-
-//  motors_stop();
-
+//	//navigation loop
+//	for(int run = 0; run < MAX_RUNS; run++) {
 //
-//  turnLeft_90();
-
-  const int MAX_RUNS = 9;
-
-  //naviagation loop
-  for(int run = 0; run < MAX_RUNS; run++) {
-
-	  //go to goal cells
-	  navigateTo(&maze, Goals, 4,false);
-
-	  //return to start
-	  navigateTo(&maze, startPos, 1, false);
-  }
-
-  return 0;
-
-  /* USER DE END 2 */
+//	//go to goal cells
+//	navigateTo(&maze, Goals, 4,false);
+//
+//	//return to start
+//	navigateTo(&maze, startPos, 1, false);
+//	}
+	HAL_Delay(1500);
+	turnRight_90();
+  /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -199,6 +205,11 @@ int main(void)
   while (1)
   {
 
+//	  while(isWallRight == 0){
+//		  HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
+//	  }
+//	  HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
+//	  moveForward_cell();
 
 //	  base_left = feedforward_pwm(target_speed_left);
 //	  base_right = feedforward_pwm(target_speed_right);
@@ -540,7 +551,7 @@ static void MX_GPIO_Init(void)
                           |ML_BWD_Pin|MR_BWD_Pin|EMIT_FR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(ML_FWD_GPIO_Port, ML_FWD_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, ML_FWD_Pin|LED_RED_Pin|LED_BLUE_Pin|LED_GREEN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -558,12 +569,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : ML_FWD_Pin */
-  GPIO_InitStruct.Pin = ML_FWD_Pin;
+  /*Configure GPIO pins : ML_FWD_Pin LED_RED_Pin LED_BLUE_Pin LED_GREEN_Pin */
+  GPIO_InitStruct.Pin = ML_FWD_Pin|LED_RED_Pin|LED_BLUE_Pin|LED_GREEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(ML_FWD_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

@@ -96,6 +96,12 @@ void Error_Handler(void);
 #define MR_BWD_GPIO_Port GPIOB
 #define ML_FWD_Pin GPIO_PIN_8
 #define ML_FWD_GPIO_Port GPIOA
+#define LED_RED_Pin GPIO_PIN_11
+#define LED_RED_GPIO_Port GPIOA
+#define LED_BLUE_Pin GPIO_PIN_12
+#define LED_BLUE_GPIO_Port GPIOA
+#define LED_GREEN_Pin GPIO_PIN_15
+#define LED_GREEN_GPIO_Port GPIOA
 #define EMIT_FR_Pin GPIO_PIN_5
 #define EMIT_FR_GPIO_Port GPIOB
 #define MR_ENC_B_Pin GPIO_PIN_6

@@ -11,15 +11,15 @@ typedef enum{
 	DIST_SR
 } dist_t;
 
-#define SR_SLOPE -12620.0f
-#define SL_SLOPE -2225.0f
-#define FR_SLOPE -21610.0f
-#define FL_SLOPE -16620.0f
+#define SR_SLOPE -9070.0f
+#define SL_SLOPE -11804.0f
+#define FR_SLOPE -13491.0f
+#define FL_SLOPE -14617.0f
 
-#define SR_INTERCEPT 3971.0f
-#define SL_INTERCEPT 3656.0f
-#define FR_INTERCEPT 4253.0f
-#define FL_INTERCEPT 4196.0f
+#define SR_INTERCEPT 3864.0f
+#define SL_INTERCEPT 4002.0f
+#define FR_INTERCEPT 3965.0f
+#define FL_INTERCEPT 3949.0f
 
 float measure_dist(dist_t dist);
 
