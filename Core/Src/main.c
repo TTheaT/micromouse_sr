@@ -167,8 +167,8 @@ int main(void)
 	motor_direction(MOTOR_LEFT,  'F');
 	motor_direction(MOTOR_RIGHT, 'F');
 
-	pid_init(&pid_left,  4.0, 0.0, 2.5);
-	pid_init(&pid_right, 4.0, 0.0, 2.5);
+	pid_init(&pid_left,  4.0, 0.0, 2.0);
+	pid_init(&pid_right, 4.0, 0.0, 2.0);
 
 
 	HAL_Delay(1500);
@@ -184,19 +184,20 @@ int main(void)
 	//
 	//  turnLeft_90();
 
-//	const int MAX_RUNS = 9;
-//
-//	//navigation loop
-//	for(int run = 0; run < MAX_RUNS; run++) {
-//
-//	//go to goal cells
-//	navigateTo(&maze, Goals, 4,false);
-//
-//	//return to start
-//	navigateTo(&maze, startPos, 1, false);
-//	}
-	HAL_Delay(1500);
-	turnRight_90();
+	const int MAX_RUNS = 9;
+
+	//navigation loop
+	for(int run = 0; run < MAX_RUNS; run++) {
+
+	//go to goal cells
+	navigateTo(&maze, Goals, 4,false);
+
+	//return to start
+	navigateTo(&maze, startPos, 1, false);
+	}
+
+//	HAL_Delay(1500);
+//	turnRight_90();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -204,6 +205,7 @@ int main(void)
 
   while (1)
   {
+//	  set_target_speeds(0.4, 0.4);
 
 //	  while(isWallRight == 0){
 //		  HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);

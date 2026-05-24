@@ -50,7 +50,7 @@ void moveForward_cell(void) {
 	HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
-	HAL_Delay(500); //TAKE THIS AWAY IF FIGURE OUT A BETTER WAY
+//	HAL_Delay(500); //TAKE THIS AWAY IF FIGURE OUT A BETTER WAY
 	//avg_enc_count=0;
 }
 
@@ -74,7 +74,7 @@ void moveForward_cell(void) {
 //
 //}
 
-void turnRight_90(void) {
+void turnRight_45(void) {
     int32_t start_left  = enc_left_count;
     int32_t start_right = enc_right_count;
 
@@ -83,7 +83,7 @@ void turnRight_90(void) {
     set_target_speeds(TURN_SPEED, TURN_SPEED);
 
     float angle_deg = 0.0f;
-    while (angle_deg < 90.0f) {
+    while (angle_deg < 93.0f) {
         float dist_left_m  = (enc_left_count  - start_left)  * M_PER_TICK;
         float dist_right_m = (enc_right_count - start_right) * M_PER_TICK;
         // For a right turn: left wheel goes forward (+), right goes backward (-)
@@ -95,7 +95,7 @@ void turnRight_90(void) {
     motors_stop();
 }
 
-void turnLeft_90(void) {
+void turnLeft_45(void) {
     int32_t start_left  = enc_left_count;
     int32_t start_right = enc_right_count;
 
@@ -104,7 +104,7 @@ void turnLeft_90(void) {
     set_target_speeds(TURN_SPEED, TURN_SPEED);
 
     float angle_deg = 0.0f;
-    while (angle_deg < 90.0f) {
+    while (angle_deg < 93.0f) {
         float dist_left_m  = (enc_left_count  - start_left)  * M_PER_TICK;
         float dist_right_m = (enc_right_count - start_right) * M_PER_TICK;
         // For a left turn: left wheel goes backward (0), right goes forward (+)
@@ -112,21 +112,20 @@ void turnLeft_90(void) {
         // and (dist_right_m - dist_left_m) is positive and growing.
         angle_deg = ((dist_right_m - dist_left_m) / (1.0f * RW)) * (180.0f / PI);
     }
-
     motors_stop();
 }
 
-//void turnRight_90(void){
-//	turnRight_45();
-//	turnRight_45();
-//	HAL_Delay(500);
-//}
-//
-//void turnLeft_90(void){
-//	turnLeft_45();
-//	turnLeft_45();
-//	HAL_Delay(500);
-//}
+void turnRight_90(void){
+	turnRight_45();
+	turnRight_45();
+	HAL_Delay(500);
+}
+
+void turnLeft_90(void){
+	turnLeft_45();
+	turnLeft_45();
+	HAL_Delay(500);
+}
 
 
 int16_t feedforward_pwm(float target_mps) {

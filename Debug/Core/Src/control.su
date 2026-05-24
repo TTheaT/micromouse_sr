@@ -2,6 +2,8 @@
 ../Core/Src/control.c:18:6:wallLeft	24	static
 ../Core/Src/control.c:24:6:wallRight	24	static
 ../Core/Src/control.c:31:6:moveForward_cell	8	static
-../Core/Src/control.c:77:6:turnRight_90	32	static
-../Core/Src/control.c:98:6:turnLeft_90	32	static
-../Core/Src/control.c:132:9:feedforward_pwm	24	static
+../Core/Src/control.c:77:6:turnRight_45	32	static
+../Core/Src/control.c:98:6:turnLeft_45	32	static
+../Core/Src/control.c:118:6:turnRight_90	8	static
+../Core/Src/control.c:124:6:turnLeft_90	8	static
+../Core/Src/control.c:131:9:feedforward_pwm	24	static

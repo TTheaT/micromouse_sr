@@ -230,10 +230,10 @@ void SysTick_Handler(void)
 			int16_t pwm_right = base_right + (int16_t)pid_corr_right;
 
 			//make sure it is in valid PWM range
-			if (pwm_left  < 0)    pwm_left  = 0;
-			if (pwm_left  > 2047) pwm_left  = 2047;
-			if (pwm_right < 0)    pwm_right = 0;
-			if (pwm_right > 2047) pwm_right = 2047;
+			if (pid_corr_left  < 0)    pid_corr_left  = 0;
+			if (pid_corr_left  > 2047) pid_corr_left  = 2047;
+			if (pid_corr_right < 0)    pid_corr_right = 0;
+			if (pid_corr_right > 2047) pid_corr_right = 2047;
 
 			motor_speed(MOTOR_LEFT,  (uint16_t)pwm_left);
 			motor_speed(MOTOR_RIGHT, (uint16_t)pwm_right);

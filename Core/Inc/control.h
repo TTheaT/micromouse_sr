@@ -10,14 +10,14 @@
 #include "PID.h"
 #include "encoders.h"
 //
-#define CELL_LENGTH_M 0.235f // standard micromouse cell
+#define CELL_LENGTH_M 0.247f // standard micromouse cell
 #define WHEEL_RADIUS_M 0.015f
 #define RW 0.0395f
 #define PI 3.14159265f
 #define TICKS_PER_WHEEL_REV 360.0f //12*30
 #define M_PER_TICK  (2.0f * PI * WHEEL_RADIUS_M / TICKS_PER_WHEEL_REV)
 #define RUN_SPEED  0.4 // forward velocity setpoint
-#define TURN_SPEED 0.35 // rotation speed
+#define TURN_SPEED 0.45 // rotation speed
 #define WHEEL_BASE  0.079  // distance between wheels (NEED TO MEASURE)
 #define TICKS_PER_CELL (CELL_LENGTH_M/M_PER_TICK)
 
@@ -28,7 +28,7 @@
 #define FRONT_THRESHOLD_M 0.12
 
 #define LEFT_THRESHOLD_M  0.08 // one sensor exceeds = side wall
-#define RIGHT_THRESHOLD_M 0.07
+#define RIGHT_THRESHOLD_M 0.065
 
 //base speed slope and intercept
 #define FF_SLOPE 995.0f
